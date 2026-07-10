@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software or code, please cite the associated manuscript."
+title: "SARS-CoV-2 and mycobacterial disease: analysis code and interactive treatment-disruption model"
+type: software
+authors:
+  - family-names: Fisman
+    given-names: David N.
+version: "1.0.0"
+date-released: "2026-07-09"
+license: MIT
+repository-code: "https://github.com/fismanda/mycobacteria-and-respiratory-viruses"
+url: "https://fismanda.github.io/mycobacteria-and-respiratory-viruses/"
+keywords:
+  - tuberculosis
+  - nontuberculous mycobacteria
+  - SARS-CoV-2
+  - distributed lag non-linear model
+  - reactivation
