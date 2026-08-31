@@ -1,232 +1,367 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Can LTBI treatment disruption explain the post-COVID TB rise?</title>
+<title>What Explains the TB Increase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap">
+
 <style>
-  :root{
-    --bg:#0f1720; --panel:#17222e; --panel2:#1e2c3a; --ink:#e8eef4; --mut:#9fb1c1;
-    --line:#2b3b4c; --blue:#4aa3ff; --red:#ff6b6b; --green:#39c07a; --amber:#f2b134; --gray:#8aa0b3;
+:root{
+  --paper:#f2f1ec; --card:#ffffff; --ink:#171722; --ink-2:#4a4a58; --ink-3:#7e7e8c;
+  --rule:#dedcd4; --track:#e6e4dc;
+  --navy:#171722; --navy-ink:#f4f3ef;
+  --accent:#b8352a; --disrupt:#0f6ea8; --migrate:#b07500; --mark:#171722;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#131319; --card:#1c1c24; --ink:#eeedf2; --ink-2:#b2b1bd; --ink-3:#83828f;
+    --rule:#2e2e39; --track:#2a2a34;
+    --navy:#090910; --navy-ink:#eeedf2;
+    --accent:#f0705f; --disrupt:#5aa9d8; --migrate:#e0a63c; --mark:#eeedf2;
   }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-       background:var(--bg);color:var(--ink);line-height:1.5}
-  .wrap{max-width:1100px;margin:0 auto;padding:26px 20px 60px}
-  h1{font-size:24px;margin:0 0 4px}
-  h2{font-size:16px;margin:26px 0 10px;color:var(--ink)}
-  p.sub{color:var(--mut);margin:0 0 18px}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-  @media(max-width:820px){.grid{grid-template-columns:1fr}}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
-  .card h3{margin:0 0 10px;font-size:14px;color:var(--mut);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
-  .ctrls{display:grid;grid-template-columns:1fr 1fr;gap:14px 22px}
-  @media(max-width:820px){.ctrls{grid-template-columns:1fr}}
-  .ctrl label{display:flex;justify-content:space-between;font-size:13px;color:var(--mut);margin-bottom:4px}
-  .ctrl label b{color:var(--ink);font-variant-numeric:tabular-nums}
-  input[type=range]{width:100%;accent-color:var(--blue)}
-  .verdict{background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--amber);
-           border-radius:10px;padding:16px 18px;margin-top:8px}
-  .verdict .big{font-size:30px;font-weight:700;font-variant-numeric:tabular-nums}
-  .verdict .big.good{color:var(--green)} .verdict .big.bad{color:var(--red)}
-  .rowmetrics{display:flex;gap:26px;flex-wrap:wrap;margin-top:6px}
-  .metric .n{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
-  .metric .l{font-size:12px;color:var(--mut)}
-  svg{width:100%;height:auto;display:block}
-  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin-top:6px}
-  .legend span{display:inline-flex;align-items:center;gap:6px}
-  .sw{width:14px;height:3px;border-radius:2px;display:inline-block}
-  .note{font-size:12.5px;color:var(--mut);margin-top:10px}
-  .foot{font-size:11.5px;color:#71859a;margin-top:26px;border-top:1px solid var(--line);padding-top:14px}
-  a{color:var(--blue)}
-  .pill{display:inline-block;padding:2px 8px;border-radius:20px;background:var(--panel2);border:1px solid var(--line);
-        font-size:11px;color:var(--mut);margin-left:8px}
+}
+:root[data-theme="dark"]{
+  --paper:#131319; --card:#1c1c24; --ink:#eeedf2; --ink-2:#b2b1bd; --ink-3:#83828f;
+  --rule:#2e2e39; --track:#2a2a34;
+  --navy:#090910; --navy-ink:#eeedf2;
+  --accent:#f0705f; --disrupt:#5aa9d8; --migrate:#e0a63c; --mark:#eeedf2;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:'DM Sans',system-ui,-apple-system,sans-serif;
+  font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'DM Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+
+header{background:var(--navy);color:var(--navy-ink);padding:2.4rem 1.5rem 2rem;border-bottom:3px solid var(--accent)}
+.hwrap{max-width:1040px;margin:0 auto}
+.eyebrow{font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
+h1{font-size:clamp(1.5rem,3.4vw,2.15rem);font-weight:800;line-height:1.12;text-wrap:balance;letter-spacing:-.015em;max-width:20ch}
+header p{margin-top:.8rem;font-size:.92rem;color:var(--navy-ink);opacity:.72;max-width:62ch;line-height:1.62}
+
+main{max-width:1040px;margin:0 auto;padding:1.5rem 1.5rem 4rem;display:flex;flex-direction:column;gap:1.4rem}
+.grid{display:grid;grid-template-columns:minmax(320px,1fr) minmax(300px,1fr);gap:1.4rem;align-items:start}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+
+.card{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:1.4rem}
+.card-title{font-size:.68rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin-bottom:1.1rem}
+.arm{font-size:.68rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin:1.7rem 0 1rem;padding-top:1.1rem;border-top:1px solid var(--rule)}
+.arm.d{color:var(--disrupt)} .arm.m{color:var(--migrate)}
+
+.ctrl{margin-bottom:1.25rem}
+.ctrl-head{display:flex;justify-content:space-between;align-items:baseline;gap:.8rem;margin-bottom:.35rem}
+.ctrl label{font-size:.82rem;font-weight:600;line-height:1.35}
+.val{font-size:.95rem;font-weight:500;white-space:nowrap}
+input[type=range]{width:100%;height:4px;cursor:pointer;accent-color:var(--accent)}
+input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.hint{font-size:.72rem;color:var(--ink-3);margin-top:.4rem;line-height:1.5}
+.hint em{color:var(--ink-2);font-style:normal}
+
+.bars{display:flex;flex-direction:column;gap:1rem}
+.bar-head{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem;margin-bottom:.35rem}
+.bar-label{font-size:.82rem;font-weight:600}
+.bar-val{font-size:.8rem;color:var(--ink-2)}
+.track{position:relative;height:13px;background:var(--track);border-radius:3px;overflow:hidden}
+.fill{height:100%;border-radius:3px;transition:width .3s ease}
+.hundred{position:absolute;top:-3px;bottom:-3px;left:50%;width:2px;background:var(--mark);opacity:.5}
+.scale{display:flex;justify-content:space-between;font-size:.66rem;color:var(--ink-3);margin-top:.35rem}
+
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.stat{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:.8rem .9rem}
+.stat .k{font-size:.64rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.stat .v{font-size:1.25rem;font-weight:500;margin-top:.25rem}
+.stat .s{font-size:.68rem;color:var(--ink-3);margin-top:.15rem}
+
+.verdict{background:var(--navy);color:var(--navy-ink);border-radius:10px;padding:1.2rem 1.3rem;font-size:.87rem;line-height:1.65}
+.verdict .k{font-size:.66rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+.verdict b{font-weight:600;color:var(--accent)}
+
+.notes{font-size:.74rem;color:var(--ink-3);line-height:1.65}
+.notes strong{color:var(--ink-2)}
+.reset{margin-top:.4rem;background:none;border:1.5px solid var(--ink);color:var(--ink);border-radius:6px;padding:.42rem 1rem;font:inherit;font-size:.78rem;font-weight:600;cursor:pointer}
+.reset:hover{background:var(--ink);color:var(--card)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.banner{background:var(--accent);color:#fff;font-size:.8rem;font-weight:600;line-height:1.5;padding:.85rem 1.5rem;text-align:center}
+.seg{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.9rem}
+.seg button{font:inherit;font-size:.72rem;font-weight:600;padding:.4rem .6rem;border-radius:6px;
+  border:1px solid var(--rule);background:var(--paper);color:var(--ink-2);cursor:pointer;line-height:1.25;text-align:left}
+.seg button.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.seg button .rr{font-family:'DM Mono',ui-monospace,monospace;display:block;font-weight:500;opacity:.8}
+.formula{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:.85rem .95rem;
+  font-family:'DM Mono',ui-monospace,monospace;font-size:.71rem;line-height:1.85;color:var(--ink-2);
+  overflow-x:auto;white-space:nowrap}
+.formula .lab{font-family:'DM Sans',sans-serif;font-weight:700;font-size:.64rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);white-space:normal;display:block;margin-bottom:.35rem}
+.formula b{color:var(--ink);font-weight:500}
+.formula + .formula{margin-top:.7rem}
+
 </style>
-</head>
-<body>
-<div class="wrap">
-  <h1>Can disruption of latent-TB treatment explain the post-COVID rise in tuberculosis? <span class="pill">interactive model</span></h1>
-  <p class="sub">A back-of-envelope reactivation model, side by side with observed OECD notification rates. Move the sliders — the point is that even generous assumptions can't reproduce the size <i>or</i> the speed of the observed rise.</p>
 
+<div class="banner">This tool evaluates order-of-magnitude plausibility under user-selected assumptions. It does not estimate causal attribution.</div>
+
+<header>
+  <div class="hwrap">
+    <div class="eyebrow">Choose your own assumptions</div>
+    <h1>How much TB can disruption and migration generate?</h1>
+    <p>Two mechanisms that require no immune dysfunction: disrupted latent-TB preventive treatment, and growth in the size and source-country composition of the arriving population. Pick the excess you want to explain from the manuscript's six counterfactual specifications, set every parameter yourself, and read off how many cases each mechanism produces. Every constant is a slider; nothing is hidden in the code.</p>
+  </div>
+</header>
+
+<main>
   <div class="grid">
-    <div class="card">
-      <h3>Observed TB notification rate, selected OECD countries (per 100,000)</h3>
-      <div id="obsChart"></div>
-      <div class="legend">
-        <span><i class="sw" style="background:var(--blue)"></i>Canada</span>
-        <span><i class="sw" style="background:var(--red)"></i>United States</span>
-        <span><i class="sw" style="background:var(--amber)"></i>England</span>
-        <span><i class="sw" style="background:var(--green)"></i>Japan</span>
+    <section class="card">
+      <div class="card-title">The excess to be explained</div>
+      <div class="seg" id="seg"></div>
+      <div id="target"></div>
+
+      <div class="arm d">Arm 1 · LTBI treatment disruption</div>
+      <div class="hint" style="margin:-.4rem 0 .9rem">Excess arises because people who would have <em>completed</em> preventive therapy did not. Raising coverage, completion or efficacy raises the excess, because more protection was withdrawn.</div>
+      <div id="armD"></div>
+
+      <div class="arm m">Arm 2 · Migration volume and composition</div>
+      <div class="hint" style="margin:-.4rem 0 .9rem">Only arrivals <em>above</em> the pre-pandemic baseline can generate excess, because the population offset and the catchment's already-immigrant-heavy baseline rate absorb the rest.</div>
+      <div id="armM"></div>
+      <button class="reset" id="reset">Reset to defaults</button>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:1.2rem">
+      <div class="card">
+        <div class="card-title">Excess cases generated, against selected excess</div>
+        <div class="bars" id="bars"></div>
+        <div class="scale"><span>0</span><span>100% of selected excess</span><span>200%</span></div>
       </div>
-      <div class="note">Every country shows a <b>2020 dip</b> (under-detection during the pandemic), then divergent paths. Canada, the US and England rebound <b>above</b> 2019; Japan keeps declining. A treatment-disruption mechanism predicts a <i>rise</i> everywhere disruption occurred — it cannot explain either the 2020 dip or Japan's continued fall.</div>
-    </div>
-
-    <div class="card">
-      <h3>Model — excess TB from LTBI treatment disruption vs. observed excess (Canada)</h3>
-      <div id="modChart"></div>
-      <div class="legend">
-        <span><i class="sw" style="background:var(--blue)"></i>Observed excess vs 2019</span>
-        <span><i class="sw" style="background:var(--red)"></i>Modelled excess from disruption</span>
+      <div class="stats" id="stats"></div>
+      <div class="card">
+        <div class="card-title">The arithmetic, with your values</div>
+        <div id="formulas"></div>
       </div>
-      <div class="note">Excess = cases above the 2019 baseline rate. The modelled curve is the most TB that disrupted LTBI treatment could plausibly cause, given your sliders.</div>
-    </div>
+      <div class="verdict"><div class="k">Reading</div><div id="verdict"></div></div>
+      <div class="card notes" id="notes"></div>
+    </section>
   </div>
-
-  <div class="verdict" id="verdict">
-    <div>Disruption explains at most <span class="big" id="pct">–</span> of the observed 2024 excess.</div>
-    <div class="rowmetrics">
-      <div class="metric"><div class="n" id="mPeak">–</div><div class="l">peak modelled excess (cases/yr)</div></div>
-      <div class="metric"><div class="n" id="mObs">–</div><div class="l">observed 2024 excess (cases/yr)</div></div>
-      <div class="metric"><div class="n" id="mUntx">–</div><div class="l">extra un-completed LTBI courses</div></div>
-      <div class="metric"><div class="n" id="mReserv">–</div><div class="l">LTBI reservoir (persons)</div></div>
-    </div>
-    <div class="note" id="timing"></div>
-  </div>
-
-  <div class="grid" style="margin-top:18px">
-    <div class="card">
-      <h3>Programme &amp; disruption</h3>
-      <div class="ctrls">
-        <div class="ctrl"><label>Population (millions) <b id="vPop"></b></label><input id="pop" type="range" min="20" max="60" step="0.5" value="40.6"></div>
-        <div class="ctrl"><label>LTBI prevalence (%) <b id="vPrev"></b></label><input id="prev" type="range" min="1" max="10" step="0.1" value="3.8"></div>
-        <div class="ctrl"><label>LTBI courses started / yr <b id="vInit"></b></label><input id="init" type="range" min="5000" max="80000" step="1000" value="25000"></div>
-        <div class="ctrl"><label>Completion, normal (%) <b id="vCb"></b></label><input id="cb" type="range" min="40" max="95" step="1" value="66"></div>
-        <div class="ctrl"><label>Completion, pandemic (%) <b id="vCp"></b></label><input id="cp" type="range" min="20" max="95" step="1" value="45"></div>
-        <div class="ctrl"><label>Disruption duration (yr) <b id="vDur"></b></label><input id="dur" type="range" min="1" max="4" step="1" value="2"></div>
-      </div>
-    </div>
-    <div class="card">
-      <h3>Reactivation biology (steel-manning the hypothesis)</h3>
-      <div class="ctrls">
-        <div class="ctrl"><label>Treatment efficacy (% ↓ reactivation) <b id="vEff"></b></label><input id="eff" type="range" min="40" max="90" step="1" value="70"></div>
-        <div class="ctrl"><label>% of treated who are recently infected <b id="vFr"></b></label><input id="fr" type="range" min="0" max="100" step="5" value="50"></div>
-        <div class="ctrl"><label>Recent-infection reactivation (%/yr, first 2 yr) <b id="vHr"></b></label><input id="hr" type="range" min="1" max="6" step="0.5" value="2.5"></div>
-        <div class="ctrl"><label>Remote reactivation (%/yr) <b id="vHo"></b></label><input id="ho" type="range" min="0.05" max="0.5" step="0.05" value="0.1"></div>
-      </div>
-      <div class="note">Defaults are deliberately generous to the disruption hypothesis (high recent-infection fraction and hazard). Push them all to the max and watch what it takes to reach the observed excess — and remember it still leaves the 2020 dip and Japan unexplained.</div>
-    </div>
-  </div>
-
-  <div class="foot">
-    Observed rates: CDC (US), PHAC (Canada), UKHSA (England), Japan TB Surveillance Center, 2019–2024 (compiled). Model defaults: Canada LTBI ≈ 1.5 million persons
-    (<a href="https://www.cmaj.ca/content/190/23/e700">CMAJ 2018</a>); remote reactivation ≈ 0.1%/yr and recent-infection risk ≈ 2–5%/yr over the first 2 years
-    (<a href="https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1002152">Houben &amp; Dodd, PLoS Med 2016</a>); treatment reduces progression ≈ 69–93%.
-    Completion defaults are empirical: in the 7-year Ottawa Hospital TB-clinic cascade, <b>66.1%</b> of those who started LTBI treatment completed it, falling to <b>45.2%</b> when care was transferred to primary care — a real-world analog of pathway disruption
-    (<a href="https://link.springer.com/article/10.1186/s12889-021-10733-9">BMC Public Health 2021</a>). Note LTBI is not reportable in Canada, so the national annual-initiations count is the least-certain input — which is why the conclusion is stated as an <i>upper bound</i>.
-    This is a transparent order-of-magnitude tool for arguing about mechanism, not a surveillance estimate. All parameters are user-adjustable.
-  </div>
-</div>
-
+</main>
 <script>
-// ---------- observed data ----------
-const years=[2019,2020,2021,2022,2023,2024];
-const obs={
-  Canada:[5.1,4.7,4.9,5.1,5.5,6.1],
-  US:[2.7,2.2,2.4,2.5,2.9,3.1],
-  England:[8.36,7.32,7.77,7.65,8.34,9.37],
-  Japan:[11.5,10.1,9.2,8.2,8.1,8.1]
+/* ---------------------------------------------------------------------------
+   TB mechanism plausibility explorer.
+   Every quantity used in the calculation is either a slider below or one of the
+   three fixed catchment constants declared here. There are no other constants.
+--------------------------------------------------------------------------- */
+const POP = 11200000;   // GTHA+ catchment, 2024
+const RATE = 2.96;      // pre-pandemic TB acute-care presentations per 100,000/year
+const YEARS = 4;        // pandemic window, 2020-03 to 2024-03
+
+/* The six counterfactual specifications reported in Table 4 of the manuscript. */
+const SPECS = [
+  {id:'p_none', fam:'Projection', trend:'no trend',    rr:1.095, sel:'BIC'},
+  {id:'p_lin',  fam:'Projection', trend:'linear',      rr:1.067, sel:''},
+  {id:'p_sp3',  fam:'Projection', trend:'spline 3 df', rr:1.031, sel:'AIC'},
+  {id:'i_none', fam:'Indicator',  trend:'no trend',    rr:1.095, sel:'BIC'},
+  {id:'i_lin',  fam:'Indicator',  trend:'linear',      rr:1.074, sel:''},
+  {id:'i_sp3',  fam:'Indicator',  trend:'spline 3 df', rr:1.217, sel:'AIC'}
+];
+
+const D = {
+  level_shift: 1.095,
+  ltbi_prevalence: 8.5,
+  annual_initiation: 1.0,
+  completion_base: 66.1,
+  completion_disrupted: 45.2,
+  treatment_efficacy: 90,
+  annual_reactivation: 0.10,
+  disruption_years: 1.5,
+  excess_arrivals: 40000,
+  high_incidence_share: 65,
+  arrival_ltbi_prevalence: 22,
+  arrival_reactivation: 0.15
 };
-const modelYears=[2019,2020,2021,2022,2023,2024,2025,2026];
 
-// ---------- tiny SVG line chart ----------
-function lineChart(el, series, opts){
-  const W=520,H=300,m={l:44,r:14,t:12,b:28};
-  const xs=opts.x, xmin=Math.min(...xs), xmax=Math.max(...xs);
-  let ymin=opts.ymin!==undefined?opts.ymin:Math.min(...series.flatMap(s=>s.y));
-  let ymax=opts.ymax!==undefined?opts.ymax:Math.max(...series.flatMap(s=>s.y));
-  if(ymax===ymin)ymax=ymin+1;
-  const X=v=>m.l+(v-xmin)/(xmax-xmin)*(W-m.l-m.r);
-  const Y=v=>H-m.b-(v-ymin)/(ymax-ymin)*(H-m.t-m.b);
-  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="inherit">`;
-  // gridlines
-  const ticks=opts.yticks||5;
-  for(let i=0;i<=ticks;i++){const yv=ymin+(ymax-ymin)*i/ticks;const y=Y(yv);
-    s+=`<line x1="${m.l}" y1="${y}" x2="${W-m.r}" y2="${y}" stroke="#2b3b4c" stroke-width="1"/>`;
-    s+=`<text x="${m.l-6}" y="${y+4}" fill="#9fb1c1" font-size="11" text-anchor="end">${(+yv.toFixed(yv<2?1:0)).toLocaleString()}</text>`;}
-  xs.forEach(xv=>{s+=`<text x="${X(xv)}" y="${H-8}" fill="#9fb1c1" font-size="11" text-anchor="middle">${xv}</text>`;});
-  if(opts.zeroLine){const y=Y(0);s+=`<line x1="${m.l}" y1="${y}" x2="${W-m.r}" y2="${y}" stroke="#4b5d6e" stroke-width="1.3"/>`;}
-  series.forEach(se=>{
-    let d=se.y.map((v,i)=>`${i?'L':'M'}${X(se.x?se.x[i]:xs[i]).toFixed(1)} ${Y(v).toFixed(1)}`).join(' ');
-    s+=`<path d="${d}" fill="none" stroke="${se.c}" stroke-width="${se.w||2.4}" ${se.dash?`stroke-dasharray="6 5"`:''} stroke-linejoin="round"/>`;
-    se.y.forEach((v,i)=>{s+=`<circle cx="${X(se.x?se.x[i]:xs[i])}" cy="${Y(v)}" r="${se.r||2.6}" fill="${se.c}"/>`;});
-  });
-  s+=`</svg>`; el.innerHTML=s;
+const TARGET = [{k:'level_shift', l:'Pandemic-era rate ratio', min:1.000, max:1.250, step:.001, u:'',
+  h:'Ratio of observed to counterfactual TB presentations, 2020–2024. The six specifications above span 1.031 to 1.217; the slider moves freely between them. Default 1.095 is the estimate returned by the BIC-selected model in both estimation families.', c:'This study, Table 4'}];
+
+const ARM_D = [
+ {k:'ltbi_prevalence', l:'LTBI prevalence, resident population (%)', min:2, max:25, step:.5, u:'%',
+  h:'Denominator: the whole catchment population. Gives the size of the latent reservoir.', c:'Menzies, CMAJ 2004'},
+ {k:'annual_initiation', l:'Reservoir starting therapy each year (%)', min:.1, max:5, step:.1, u:'%',
+  h:'Denominator: people with latent infection in the catchment. This is a user assumption, not a published rate — no catchment-specific figure exists. Note that the widely cited 18.8% completion figure has people referred for screening as its denominator, not the whole reservoir, and is not used here.', c:'Assumption; set it yourself'},
+ {k:'completion_base', l:'Completion, pre-pandemic (%)', min:20, max:95, step:.1, u:'%',
+  h:'Share of those starting preventive therapy who finish it under normal service conditions.', c:'Ottawa cohort, 66.1%'},
+ {k:'completion_disrupted', l:'Completion, disrupted (%)', min:10, max:95, step:.1, u:'%',
+  h:'Share finishing under disrupted conditions. The gap between this and the line above is the protection actually lost; the Ottawa cohort fell to 45.2% after transfer to primary care, a relative decline of about 32%.', c:'Ottawa cohort, 45.2%'},
+ {k:'treatment_efficacy', l:'Efficacy of completed therapy (%)', min:60, max:95, step:1, u:'%',
+  h:'Relative risk reduction in progression to active disease among those completing therapy.', c:'Smieja, Cochrane 1999'},
+ {k:'annual_reactivation', l:'Annual reactivation, untreated (%/yr)', min:.05, max:.5, step:.01, u:'%',
+  h:'Progression to active TB per year among untreated, long-settled individuals with latent infection.', c:'Tiemersma, PLoS ONE 2011'},
+ {k:'disruption_years', l:'Disruption duration (years)', min:.5, max:4, step:.25, u:'y',
+  h:'How long completion was depressed. Each disrupted year contributes a cohort that then accrues reactivation risk for the remainder of the four-year window.', c:'Assumption'}
+];
+
+const ARM_M = [
+ {k:'excess_arrivals', l:'Excess annual arrivals to catchment', min:0, max:250000, step:5000, u:'',
+  h:'Arrivals above the pre-pandemic annual baseline, permanent and non-permanent combined. Canada admitted 483,390 permanent residents in 2024 against roughly 340,000 in 2019, and non-permanent resident growth accelerated from about 100,000 to about 370,000 per year.', c:'Statistics Canada'},
+ {k:'high_incidence_share', l:'From high-incidence settings (%)', min:0, max:100, step:1, u:'%',
+  h:'Denominator: excess arrivals. Share from countries with TB incidence at or above 100 per 100,000; about 65% among 2024 top-20 source countries.', c:'IRCC admissions 2024'},
+ {k:'arrival_ltbi_prevalence', l:'LTBI prevalence among arrivals (%)', min:5, max:45, step:1, u:'%',
+  h:'Denominator: arrivals from high-incidence settings. Estimated 22% (95% UI 17–29) for 2014 arrivals.', c:'CMAJ 2023;195:E1651'},
+ {k:'arrival_reactivation', l:'Post-arrival reactivation (%/yr)', min:.05, max:2, step:.05, u:'%',
+  h:'Progression to active disease per year among latently infected arrivals during the elevated early post-migration period. Pre-departure radiography detects active disease, not latent infection, and so is not applied as a reduction here.', c:'Foreign-born TB models'}
+];
+
+let P = {...D};
+
+function compute(p){
+  const baseline  = POP * RATE / 1e5 * YEARS;
+  const observed  = baseline * (p.level_shift - 1);
+
+  const ltbiN     = POP * p.ltbi_prevalence / 100;
+  const starts    = ltbiN * p.annual_initiation / 100;
+  const lostFrac  = Math.max(0, (p.completion_base - p.completion_disrupted) / 100);
+  const lostPerYr = starts * lostFrac;
+
+  // each disrupted year's cohort accrues risk for the remainder of the window
+  let personYears = 0, remaining = p.disruption_years;
+  for (let y = 0; remaining > 0; y++){
+    const slice = Math.min(1, remaining);
+    personYears += slice * Math.max(0, YEARS - y);
+    remaining -= slice;
+  }
+  const disruption = lostPerYr * (p.treatment_efficacy/100)
+                   * (p.annual_reactivation/100) * personYears;
+
+  const atRisk = p.excess_arrivals * (p.high_incidence_share/100)
+               * (p.arrival_ltbi_prevalence/100);
+  let migPersonYears = 0;
+  for (let c = 1; c <= YEARS; c++) migPersonYears += (YEARS - c + 1);
+  const migration = atRisk * (p.arrival_reactivation/100) * migPersonYears;
+
+  const pc = x => observed > 0 ? x/observed*100 : 0;
+  return {baseline, observed, ltbiN, starts, lostPerYr, personYears, atRisk, migPersonYears,
+          disruption, migration, combined: disruption + migration,
+          dPct: pc(disruption), mPct: pc(migration), cPct: pc(disruption + migration)};
 }
 
-// ---------- model ----------
-const g=id=>document.getElementById(id);
-const P={pop:'pop',prev:'prev',init:'init',cb:'cb',cp:'cp',dur:'dur',eff:'eff',fr:'fr',hr:'hr',ho:'ho'};
-function val(id){return +g(id).value}
+const fmt  = n => Math.round(n).toLocaleString();
+const fmt1 = n => (Math.round(n*10)/10).toLocaleString();
 
-function compute(){
-  const pop=val('pop')*1e6, prev=val('prev')/100, init=val('init'),
-        cb=val('cb')/100, cp=val('cp')/100, dur=val('dur'),
-        eff=val('eff')/100, fr=val('fr')/100, hr=val('hr')/100, ho=val('ho')/100;
-  const reservoir=pop*prev;
-  const per100k=pop/1e5;
-  // extra un-completed courses per disruption year (2020 ... )
-  const extraPerYear=init*Math.max(0,(cb-cp));
-  const disruptionStart=2020;
-  // each disruption cohort reactivates: elevated hazard first 2 yrs, remote after
-  function hazard(ageYears){ return ageYears<2 ? (fr*hr+(1-fr)*ho) : ho; }
-  // modelled excess cases by calendar year (only counts averted-prevention lost)
-  const modExcess=modelYears.map(yr=>{
-    let cases=0;
-    for(let dy=0; dy<dur; dy++){
-      const cohortYear=disruptionStart+dy;
-      if(yr>=cohortYear){
-        const age=yr-cohortYear;
-        cases += extraPerYear * hazard(age) * eff;
-      }
-    }
-    return cases;
-  });
-  // observed excess (Canada) vs 2019 baseline, in cases/yr
-  const base=obs.Canada[0];
-  const obsExcess=[];
-  years.forEach((yr,i)=> obsExcess.push((obs.Canada[i]-base)*per100k));
-  // project 2025-26 flat-ish continuation of 2024 for visual reference
-  obsExcess.push((obs.Canada[5]-base)*per100k);
-  obsExcess.push((obs.Canada[5]-base)*per100k);
-
-  const peak=Math.max(...modExcess);
-  const obs2024=(obs.Canada[5]-base)*per100k;
-  const pct=obs2024>0? Math.min(999,100*peak/obs2024):0;
-  return {reservoir,extraTotal:extraPerYear*dur,modExcess,obsExcess,peak,obs2024,pct};
+function control(m){
+  const v = P[m.k];
+  return `<div class="ctrl">
+    <div class="ctrl-head">
+      <label for="${m.k}">${m.l}</label>
+      <span class="val mono" id="v_${m.k}">${show(m,v)}</span>
+    </div>
+    <input type="range" id="${m.k}" min="${m.min}" max="${m.max}" step="${m.step}" value="${v}"
+           aria-describedby="h_${m.k}">
+    <div class="hint" id="h_${m.k}">${m.h} <em>(${m.c})</em></div>
+  </div>`;
+}
+function show(m,v){
+  if (m.k === 'excess_arrivals') return v.toLocaleString();
+  if (m.k === 'level_shift')     return v.toFixed(3);
+  return v + m.u;
 }
 
-function fmt(n){return Math.round(n).toLocaleString()}
+function bar(label,value,pct,colour){
+  const w = Math.max(0,Math.min(pct,200))/200*100;
+  return `<div>
+    <div class="bar-head"><span class="bar-label">${label}</span>
+      <span class="bar-val mono">${fmt(value)} cases · ${Math.round(pct)}% of selected excess</span></div>
+    <div class="track"><div class="fill" style="width:${w}%;background:${colour}"></div>
+      <div class="hundred"></div></div>
+  </div>`;
+}
+
+function segs(){
+  document.getElementById('seg').innerHTML = SPECS.map(s =>
+    `<button type="button" data-rr="${s.rr}" class="${Math.abs(P.level_shift-s.rr)<1e-9?'on':''}">
+       ${s.fam} · ${s.trend}${s.sel?' ('+s.sel+')':''}
+       <span class="rr">RR ${s.rr.toFixed(3)}</span></button>`).join('');
+  for (const b of document.querySelectorAll('#seg button'))
+    b.addEventListener('click', () => {
+      P.level_shift = parseFloat(b.dataset.rr);
+      document.getElementById('level_shift').value = P.level_shift;
+      render();
+    });
+}
+
 function render(){
-  // slider readouts
-  g('vPop').textContent=val('pop').toFixed(1); g('vPrev').textContent=val('prev').toFixed(1)+'%';
-  g('vInit').textContent=fmt(val('init')); g('vCb').textContent=val('cb')+'%'; g('vCp').textContent=val('cp')+'%';
-  g('vDur').textContent=val('dur'); g('vEff').textContent=val('eff')+'%'; g('vFr').textContent=val('fr')+'%';
-  g('vHr').textContent=val('hr').toFixed(1)+'%'; g('vHo').textContent=val('ho').toFixed(2)+'%';
+  const r = compute(P);
 
-  const r=compute();
-  g('pct').textContent=Math.round(r.pct)+'%';
-  g('pct').className='big '+(r.pct<50?'good':'bad');
-  g('mPeak').textContent=fmt(r.peak);
-  g('mObs').textContent=fmt(r.obs2024);
-  g('mUntx').textContent=fmt(r.extraTotal);
-  g('mReserv').textContent=fmt(r.reservoir);
-  g('timing').innerHTML = r.pct<50
-    ? `Even at these settings, disruption reproduces only a minority of the rise — and it ramps up <i>slowly</i> as cohorts reactivate, so it cannot produce the sharp 2023–24 acceleration, nor the observed 2020 dip.`
-    : `To get here you had to push completion, cohort size and reactivation hazard to extremes. Even so, the modelled excess accrues on a multi-year reactivation lag — it still can't produce the 2020 <b>dip</b>, the sharp 2023–24 acceleration, or Japan's continued decline under the same disruption.`;
+  document.getElementById('bars').innerHTML =
+      bar('LTBI treatment disruption', r.disruption, r.dPct, 'var(--disrupt)')
+    + bar('Migration volume and composition', r.migration, r.mPct, 'var(--migrate)')
+    + bar('Both together', r.combined, r.cPct, 'var(--mark)');
 
-  lineChart(g('obsChart'), [
-    {y:obs.Canada,c:'#4aa3ff'},{y:obs.US,c:'#ff6b6b'},{y:obs.England,c:'#f2b134'},{y:obs.Japan,c:'#39c07a'}
-  ], {x:years,ymin:0,ymax:12,yticks:6});
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="k">Baseline, 4 years</div><div class="v mono">${fmt(r.baseline)}</div><div class="s">expected TB presentations</div></div>
+    <div class="stat"><div class="k">Selected excess</div><div class="v mono">${fmt(r.observed)}</div><div class="s">cases above counterfactual</div></div>
+    <div class="stat"><div class="k">Latent reservoir</div><div class="v mono">${fmt(r.ltbiN)}</div><div class="s">residents, latent infection</div></div>
+    <div class="stat"><div class="k">Annual starts</div><div class="v mono">${fmt(r.starts)}</div><div class="s">beginning therapy per year</div></div>`;
 
-  lineChart(g('modChart'), [
-    {y:r.obsExcess,x:modelYears,c:'#4aa3ff'},
-    {y:r.modExcess,x:modelYears,c:'#ff6b6b',dash:true}
-  ], {x:modelYears,zeroLine:true,
-      ymin:Math.min(0,...r.obsExcess),
-      ymax:Math.max(50,...r.obsExcess,...r.modExcess)*1.1,yticks:5});
+  document.getElementById('formulas').innerHTML = `
+    <div class="formula"><span class="lab">Arm 1 · disruption</span>
+      starts <b>${fmt(r.starts)}</b> × completion lost <b>${fmt1(P.completion_base - P.completion_disrupted)}pp</b>
+      = <b>${fmt(r.lostPerYr)}</b> unprotected per year<br>
+      × efficacy <b>${P.treatment_efficacy}%</b> × reactivation <b>${P.annual_reactivation}%/yr</b>
+      × <b>${fmt1(r.personYears)}</b> person-years of exposure
+      = <b>${fmt(r.disruption)}</b> cases
+    </div>
+    <div class="formula"><span class="lab">Arm 2 · migration</span>
+      excess arrivals <b>${P.excess_arrivals.toLocaleString()}</b>/yr × high-incidence <b>${P.high_incidence_share}%</b>
+      × LTBI <b>${P.arrival_ltbi_prevalence}%</b> = <b>${fmt(r.atRisk)}</b> at risk per cohort<br>
+      × reactivation <b>${P.arrival_reactivation}%/yr</b> × <b>${r.migPersonYears}</b> cohort-years
+      = <b>${fmt(r.migration)}</b> cases
+    </div>
+    <div class="formula"><span class="lab">Selected excess</span>
+      catchment <b>${POP.toLocaleString()}</b> × baseline rate <b>${RATE}</b>/100,000/yr × <b>${YEARS}</b> yr
+      = <b>${fmt(r.baseline)}</b> expected<br>
+      × (RR <b>${P.level_shift.toFixed(3)}</b> − 1) = <b>${fmt(r.observed)}</b> excess presentations
+    </div>`;
+
+  document.getElementById('verdict').innerHTML =
+    `Under these assumptions disruption generates <b>${fmt(r.disruption)}</b> cases and migration
+     <b>${fmt(r.migration)}</b>, together <b>${Math.round(r.cPct)}%</b> of the
+     <b>${fmt(r.observed)}</b> excess implied by the specification you selected.
+     Magnitude is only half the test. The observed excess accrued from 2020 through early 2022 and
+     was flat thereafter (Figure 2B of the manuscript); disruption of preventive therapy predicts
+     accrual continuing through 2023–24, and migration predicts onset later still. A parameter set
+     that matches the total without matching that shape has not explained the excess.`;
+
+  for (const m of [...TARGET,...ARM_D,...ARM_M])
+    document.getElementById('v_'+m.k).textContent = show(m, P[m.k]);
+
+  segs();
 }
-Object.values(P).forEach(id=>g(id).addEventListener('input',render));
-render();
+
+function mount(){
+  document.getElementById('target').innerHTML = TARGET.map(control).join('');
+  document.getElementById('armD').innerHTML   = ARM_D.map(control).join('');
+  document.getElementById('armM').innerHTML   = ARM_M.map(control).join('');
+  document.getElementById('notes').innerHTML = `
+    <strong>Model notes.</strong> Fixed constants, used nowhere else: catchment population 11,200,000;
+    pre-pandemic TB rate 2.96 per 100,000 per year; window 4 years. Every other quantity is a slider.
+    The disruption arm counts only the protection actually lost — annual treatment starts multiplied by
+    the fall in completion — rather than the whole treated population, and each disrupted year's cohort
+    accrues reactivation risk for the remainder of the window, which is the assumption the person-years
+    term makes explicit. The migration arm counts only arrivals above the pre-pandemic baseline, since a
+    population offset and an already immigrant-heavy baseline rate absorb the rest; pre-departure
+    radiography is not modelled as a reduction because it detects active disease rather than latent
+    infection. The enhanced screening initiative for TB infection is likewise not modelled: it covers only
+    migrants with HIV, transplant, end-stage renal disease, recent TB contact or head and neck cancer,
+    produced 177 referrals in Alberta over four years — 2% of provincial referrals — and is preventive
+    rather than case-finding. Neither arm models deferred-diagnosis catch-up.`;
+
+  for (const m of [...TARGET,...ARM_D,...ARM_M])
+    document.getElementById(m.k).addEventListener('input', e => {
+      P[m.k] = parseFloat(e.target.value);
+      render();
+    });
+
+  document.getElementById('reset').addEventListener('click', () => {
+    P = {...D};
+    for (const m of [...TARGET,...ARM_D,...ARM_M]) document.getElementById(m.k).value = P[m.k];
+    render();
+  });
+  render();
+}
+mount();
 </script>
-</body>
-</html>
